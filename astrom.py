@@ -400,16 +400,7 @@ def processing(cfgFName):
     filename_in  = cfg.get('basic','filename_in')
     
     convert_excel2csv(cfg)
-    folderName = os.path.basename(os.getcwd())
-    if os.name == 'nt' :
-        foutRUR = filename_out[:-4]+'RUR'+filename_out[-4:]
-        foutUSD = filename_out[:-4]+'USD'+filename_out[-4:]
 
-        if os.path.exists(foutRUR)  : shutil.copy2(foutRUR , 'c://AV_PROM/prices/' + folderName +'/'+foutRUR)
-        if os.path.exists(foutUSD)  : shutil.copy2(foutUSD , 'c://AV_PROM/prices/' + folderName +'/'+foutUSD)
-        if os.path.exists('python.log')  : shutil.copy2('python.log',  'c://AV_PROM/prices/' + folderName +'/python.log')
-        if os.path.exists('python.log.1'): shutil.copy2('python.log.1','c://AV_PROM/prices/' + folderName +'/python.log.1')
-    
 
 
 def main( dealerName):
