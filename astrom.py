@@ -121,8 +121,10 @@ def convert_excel2csv(cfg):
 
     segment = ''
     sklad = ''
+    brand = ''
+    subgrp = ''
     recOut  ={}
-    for i in range(2, sheet.max_row +1) :                                # xlsx
+    for i in range(1, sheet.max_row +1) :                                # xlsx
 #   for i in range(2, sheet.nrows) :                                     # xls
         i_last = i
         try:
@@ -131,10 +133,13 @@ def convert_excel2csv(cfg):
             #print( impValues )
             if sheet.cell( row=i, column=in_cols_j['код_']).fill.fgColor.type=='indexed':   # подгруппа
                 #print(sheet.cell( row=i, column=in_cols_j['код_']).fill.fgColor.indexed)
-                col2 = sheet.cell( row=i, column=in_cols_j['код_']).value.strip()
-                t = col2.rpartition(' ')
-                brand  = t[2]
-                subgrp = t[0]
+                if sheetName=='телевизоры':
+                    col2 = sheet.cell( row=i, column=in_cols_j['код_']).value.strip()
+                    t = col2.rpartition(' ')
+                    brand  = t[2]
+                    subgrp = t[0]
+                else:
+                    subgrp = sheet.cell( row=i, column=in_cols_j['код_']).value.strip()
                 continue
             elif impValues['цена1']=='0': # (ccc.value == None) or (ccc2.value == None) :   # Пустая строка
                 #print( 'Пустая строка. i=',i, impValues )
@@ -142,22 +147,30 @@ def convert_excel2csv(cfg):
             elif impValues['код_'] == '' or impValues['код_'] == 'Арт.' :  # Пустая строка
                 #print (i, 'Пусто!!!')
                 continue
-            else :                                                         # Обычная строка
-                if  impValues['сегмент']=='':
-                    impValues['сегмент'] = segment;
-                else:
-                    segment = impValues['сегмент'];
+            else :                                                      # Обычная строка
+                try:
+                    if  impValues['сегмент']=='':
+                        impValues['сегмент'] = segment;
+                    else:
+                        segment = impValues['сегмент'];
+                except Exception as e:
+                    segment = ''
 
                 if  impValues['склад']=='' and sheetName=='Panasonic Displays':
                     impValues['склад'] = sklad;
                 else:
                     sklad = impValues['склад'];
                     
-                if sheetName=='Price':
+                if sheetName=='телевизоры':
                     t = impValues['код_'].partition(' ')
-                    impValues['код_']     =t[0]
-                    impValues['бренд']    =brand
-                    impValues['подгруппа']=subgrp
+                    impValues['бренд'] = t[-1]
+                    
+                impValues['бренд']    =brand
+                impValues['подгруппа']=subgrp
+                
+                t = impValues['код_'].partition(' ')
+                impValues['код_'] = t[0]
+
                 for outColName in out_template.keys() :
                     shablon = out_template[outColName]
                     for key in impValues.keys():
